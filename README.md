@@ -1,3 +1,6 @@
+# NetGrumble
+This goal of this fork is to add features common to network operating system shells such as unambiguous partial command acceptance, ? help, parser, and various access modes for prompt. There is no additional documentation at this time.
+
 # Grumble - A powerful modern CLI and SHELL
 
 [![GoDoc](https://godoc.org/github.com/desertbit/grumble?status.svg)](https://godoc.org/github.com/desertbit/grumble)
