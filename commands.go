@@ -25,7 +25,9 @@
 package grumble
 
 import (
+	"fmt"
 	"sort"
+	"strings"
 )
 
 // Commands collection.
@@ -47,6 +49,16 @@ func (c *Commands) All() []*Command {
 // Get the command by the name. Aliases are also checked.
 // Returns nil if not found.
 func (c *Commands) Get(name string) *Command {
+
+	//Allow partial commands as long as they are unambiguous
+	suggestions, _ := newCompleter(c).Do([]rune(name), len(name))
+	if len(suggestions) == 1 {
+		name = name + strings.TrimSpace(string(suggestions[0]))
+	} else if len(suggestions) > 1 {
+		fmt.Println("Ambiguous Command")
+		return nil
+	}
+
 	for _, cmd := range c.list {
 		if cmd.Name == name {
 			return cmd
