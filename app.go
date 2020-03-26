@@ -205,7 +205,7 @@ func (a *App) Stderr() io.Writer {
 // AddCommand adds a new command.
 // Panics on error.
 func (a *App) AddCommand(cmd *Command) {
-	a.addCommand(cmd, true)
+	a.addCommand(cmd, false) //NetGrumble removed
 }
 
 // addCommand adds a new command.
