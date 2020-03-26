@@ -108,7 +108,7 @@ func (c *Command) AddCommand(cmd *Command) {
 	}
 
 	cmd.parent = c
-	cmd.registerFlags(true)
+	cmd.registerFlags(false) //changed for netgrubmle
 
 	c.commands.Add(cmd)
 }

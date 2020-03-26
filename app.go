@@ -80,8 +80,8 @@ func New(c *Config) (a *App) {
 	}
 
 	// Register the builtin flags.
-	//a.flags.Bool("h", "help", false, "display help")//removed from netgrumble
-	//a.flags.BoolL("nocolor", false, "disable color output")
+	a.flags.Bool("h", "help", false, "display help")
+	a.flags.BoolL("nocolor", false, "disable color output")
 
 	// Register the user flags if present.
 	if c.Flags != nil {
