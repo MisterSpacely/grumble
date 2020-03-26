@@ -107,12 +107,12 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 		if flags != nil {
 			for _, f := range flags.list {
 				if len(f.Short) > 0 {
-					short := "-" + f.Short
+					short := "" + f.Short //netgrumble removed -
 					if len(prefix) < len(short) && strings.HasPrefix(short, prefix) {
 						suggestions = append(suggestions, []rune(strings.TrimPrefix(short, prefix)))
 					}
 				}
-				long := "--" + f.Long
+				long := "" + f.Long //netgrubmle hack removed --
 				if len(prefix) < len(long) && strings.HasPrefix(long, prefix) {
 					suggestions = append(suggestions, []rune(strings.TrimPrefix(long, prefix)))
 				}
@@ -124,9 +124,9 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 		}
 		if flags != nil {
 			for _, f := range flags.list {
-				suggestions = append(suggestions, []rune("--"+f.Long))
+				suggestions = append(suggestions, []rune(f.Long)) //netgrumble hack removed --
 				if len(f.Short) > 0 {
-					suggestions = append(suggestions, []rune("-"+f.Short))
+					suggestions = append(suggestions, []rune(f.Short)) //netgrumble hack removed -
 				}
 			}
 		}

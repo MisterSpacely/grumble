@@ -25,6 +25,7 @@
 package grumble
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 	"strconv"
@@ -96,21 +97,39 @@ func (f *Flags) register(
 }
 
 func (f *Flags) match(flag, short, long string) bool {
-	return (len(short) > 0 && flag == "-"+short) ||
-		(len(long) > 0 && flag == "--"+long)
+	return len(long) > 0 && flag == long
 }
 
 func (f *Flags) parse(args []string, res FlagMap) ([]string, error) {
+
 	var err error
 	var parsed bool
 
 	// Parse all leading flags.
 Loop:
 	for len(args) > 0 {
+		//Check to see if this is a flag, we can't rely on the prefix - in netgrumble
 		a := args[0]
-		if !strings.HasPrefix(a, "-") {
+
+		//See if this is a flag - netgrumble add
+		full_param := ""
+		//@todo figure out how to allow flags to only be used once per command instead of overwriting
+		for _, f := range f.list {
+			if len(a) <= len(f.Long) && strings.HasPrefix(f.Long, a) {
+				if full_param != "" {
+					return nil, errors.New("Ambiguous command flags: " + a + " could mean " + full_param + " or " + f.Long + ".")
+				}
+
+				full_param = f.Long
+
+			}
+		}
+		if full_param == "" {
 			break Loop
 		}
+
+		a = full_param
+
 		args = args[1:]
 		pos := strings.Index(a, "=")
 		equalVal := ""
