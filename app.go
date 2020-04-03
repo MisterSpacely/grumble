@@ -325,6 +325,19 @@ func (a *App) Run() (err error) {
 				return nil
 			}
 
+			flags := cmd.flags.list
+			command_has_no_flag := false
+			for _, flag := range flags {
+				if flag.Long == "no" {
+					command_has_no_flag = true
+					break
+				}
+			}
+
+			if !command_has_no_flag {
+				return errors.New("negating this command not possible")
+			}
+
 			//Add the no as a flag and run the original command
 			c.Args = append(c.Args, "no")
 			a.RunCommand(c.Args)
