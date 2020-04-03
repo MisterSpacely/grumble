@@ -41,6 +41,7 @@ func init() {
 			f.Int64("", "int64", 2, "test int64")
 			f.Uint("", "uint", 3, "test uint")
 			f.Uint64("", "uint64", 4, "test uint64")
+			f.Bool("", "no", false, "no")
 		},
 		Run: func(c *grumble.Context) error {
 			fmt.Println("duration ", c.Flags.Duration("duration"))
@@ -48,8 +49,7 @@ func init() {
 			fmt.Println("int64    ", c.Flags.Int64("int64"))
 			fmt.Println("uint     ", c.Flags.Uint("uint"))
 			fmt.Println("uint64   ", c.Flags.Uint64("uint64"))
-			fmt.Println("float    ", c.Flags.Float64("float"))
-
+			fmt.Println("bool   ", c.Flags.Bool("no"))
 			return nil
 		},
 	})

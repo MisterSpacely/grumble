@@ -59,6 +59,11 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 		words = words[1:]
 	}
 
+	// Simple hack to allow auto completion for no. NETGRUMBLE
+	if len(words) > 0 && words[0] == "no" {
+		words = words[1:]
+	}
+
 	var (
 		cmds        *Commands
 		flags       *Flags
@@ -114,7 +119,10 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 				}
 				long := "" + f.Long //netgrubmle hack removed --
 				if len(prefix) < len(long) && strings.HasPrefix(long, prefix) {
-					suggestions = append(suggestions, []rune(strings.TrimPrefix(long, prefix)))
+					if long != "no" {
+						suggestions = append(suggestions, []rune(strings.TrimPrefix(long, prefix)))
+					}
+
 				}
 			}
 		}
@@ -124,7 +132,9 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 		}
 		if flags != nil {
 			for _, f := range flags.list {
-				suggestions = append(suggestions, []rune(f.Long)) //netgrumble hack removed --
+				if f.Long != "no" {
+					suggestions = append(suggestions, []rune(f.Long)) //netgrumble hack removed --
+				}
 				if len(f.Short) > 0 {
 					suggestions = append(suggestions, []rune(f.Short)) //netgrumble hack removed -
 				}

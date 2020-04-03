@@ -49,12 +49,12 @@ func (c *Commands) All() []*Command {
 // Get the command by the name. Aliases are also checked.
 // Returns nil if not found.
 func (c *Commands) Get(name string) *Command {
-
 	//Allow partial commands as long as they are unambiguous
 	suggestions, _ := newCompleter(c).Do([]rune(name), len(name))
 	if len(suggestions) == 1 {
 		name = name + strings.TrimSpace(string(suggestions[0]))
 	} else if len(suggestions) > 1 {
+		//@todo allow exact commands and flags even if a longer variation exist
 		fmt.Println("Ambiguous Command")
 		return nil
 	}

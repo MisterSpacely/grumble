@@ -25,6 +25,7 @@
 package grumble
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -302,6 +303,33 @@ func (a *App) Run() (err error) {
 				return nil
 			}
 			a.printCommandHelp(a, cmd, a.isShell)
+			return nil
+		},
+	}, false)
+
+	// NETGRUMBLE add no form of commands
+	// Add general builtin commands.
+	a.addCommand(&Command{
+		Name:      "no",
+		Help:      "use 'no [command]' to disable, delete, or return to default values",
+		AllowArgs: true,
+		Run: func(c *Context) error {
+			if len(c.Args) == 0 {
+				return errors.New("must specify command to negate")
+			}
+			cmd, _, err := a.commands.FindCommand(c.Args)
+			if err != nil {
+				return err
+			} else if cmd == nil {
+				a.PrintError(fmt.Errorf("command not found"))
+				return nil
+			}
+
+			//Add the no as a flag and run the original command
+			c.Args = append(c.Args, "no")
+			a.RunCommand(c.Args)
+
+			//run the command and set the no flag
 			return nil
 		},
 	}, false)
