@@ -161,3 +161,17 @@ func (f FlagMap) Duration(long string) time.Duration {
 	}
 	return v
 }
+
+// Netgrumble: IP Mask returns the given flag value as an ip mask
+// Panics if not present. Flags must be registered.
+func (f FlagMap) IPN(long string) IPandMASK {
+	i := f[long]
+	if i == nil {
+		panic(fmt.Errorf("missing flag value: flag '%s' not registered", long))
+	}
+	v, ok := i.Value.(IPandMASK)
+	if !ok {
+		panic(fmt.Errorf("failed to assert flag '%s' to IP Mask", long))
+	}
+	return v
+}

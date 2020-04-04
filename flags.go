@@ -27,6 +27,7 @@ package grumble
 import (
 	"errors"
 	"fmt"
+	"net"
 	"sort"
 	"strconv"
 	"strings"
@@ -481,4 +482,81 @@ func trimQuotes(s string) string {
 		return s[1 : len(s)-1]
 	}
 	return s
+}
+
+// IPL same as IP, but without a shorthand.
+func (f *Flags) IPNL(long string, defaultValue IPandMASK, help string) {
+	f.IPN("", long, defaultValue, help)
+}
+
+// NETGRUBMLE: IP registers a IP flag.
+func (f *Flags) IPN(short string, long string, defaultValue IPandMASK, help string) {
+	f.register(short, long, help, "ip", true, defaultValue,
+		func(res FlagMap) {
+			res[long] = &FlagMapItem{
+				Value:     defaultValue,
+				IsDefault: true,
+			}
+		},
+		func(flag, equalVal string, args []string, res FlagMap) ([]string, bool, error) {
+			if !f.match(flag, short, long) {
+				return args, false, nil
+			}
+			if len(equalVal) > 0 {
+				res[long] = &FlagMapItem{
+					Value:     trimQuotes(equalVal),
+					IsDefault: false,
+				}
+				return args, true, nil
+			}
+			if len(args) == 0 {
+				return args, false, fmt.Errorf("missing ip value for %s", flag)
+			}
+
+			var ip net.IP
+			var mask net.IPMask
+			var err error
+
+			if strings.Contains(args[0], `/`) {
+				var netw *net.IPNet
+				ip, netw, err = net.ParseCIDR(args[0])
+				if err != nil {
+					return args, false, fmt.Errorf("bad cidr value for %s", flag)
+				}
+				mask = netw.Mask
+				args = args[1:]
+			} else if len(args) < 2 {
+				return args, false, fmt.Errorf("missing mask value for %s", flag)
+			} else if strings.Contains(args[1], `/`) {
+				var netw *net.IPNet
+				ip, netw, err = net.ParseCIDR(args[0] + args[1])
+				if err != nil {
+					return args, false, fmt.Errorf("bad cidr value for %s", flag)
+				}
+				mask = netw.Mask
+				args = args[2:]
+			} else {
+				ip = net.ParseIP(args[0])
+				mask = net.IPMask(net.ParseIP(args[1]).To4())
+				args = args[2:]
+			}
+
+			if ip == nil {
+				return args, false, fmt.Errorf("bad ip value for %s", flag)
+			}
+
+			if mask == nil {
+				return args, false, fmt.Errorf("bad mask value for %s", flag)
+			}
+			res[long] = &FlagMapItem{
+				Value:     IPandMASK{IP: ip, Mask: mask},
+				IsDefault: false,
+			}
+			return args, true, nil
+		})
+}
+
+type IPandMASK struct {
+	IP   net.IP
+	Mask net.IPMask
 }

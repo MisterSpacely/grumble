@@ -132,7 +132,7 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 		}
 		if flags != nil {
 			for _, f := range flags.list {
-				if f.Long != "no" {
+				if f.Long != "no" && !stringInSlice(f.Long, words) { //netgrumble we don't suggest the no command or flags that have already been set
 					suggestions = append(suggestions, []rune(f.Long)) //netgrumble hack removed --
 				}
 				if len(f.Short) > 0 {
@@ -148,4 +148,13 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 	}
 
 	return suggestions, len(prefix)
+}
+
+func stringInSlice(s string, list []string) bool {
+	for _, v := range list {
+		if s == v {
+			return true
+		}
+	}
+	return false
 }
