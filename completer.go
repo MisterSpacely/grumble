@@ -81,11 +81,13 @@ func (c *completer) Do(line []rune, pos int) (newLine [][]rune, length int) {
 
 		// Call the custom completer if present.
 		if cmd.Completer != nil {
-			words = cmd.Completer(prefix, rest)
-			for _, w := range words {
-				suggestions = append(suggestions, []rune(strings.TrimPrefix(w, prefix)))
+			words = cmd.Completer(prefix, rest) //netgrumble change, if completer returns nil use default completer
+			if words != nil {
+				for _, w := range words {
+					suggestions = append(suggestions, []rune(strings.TrimPrefix(w, prefix)))
+				}
+				return suggestions, len(prefix)
 			}
-			return suggestions, len(prefix)
 		}
 
 		// No rest must be there.
